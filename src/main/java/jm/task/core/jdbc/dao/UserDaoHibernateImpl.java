@@ -1,19 +1,12 @@
 package jm.task.core.jdbc.dao;
 
-//import com.mysql.cj.Session;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.HibernateUtil;
 import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
-
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
-import java.util.Queue;
 
 public class UserDaoHibernateImpl implements UserDao {
     public UserDaoHibernateImpl() {
