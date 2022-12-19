@@ -2,73 +2,95 @@ package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.HibernateUtil;
-import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import java.sql.SQLException;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
+    SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    Transaction tr;
     public UserDaoHibernateImpl() {
 
     }
 
-
     @Override
     public void createUsersTable() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        Transaction tr = session.beginTransaction();
-        session.close();
 
+        try (Session session = sessionFactory.openSession()){
+            tr  = session.beginTransaction();
+            session.createNativeQuery("create table if not exists users" +
+                    "(id INTEGER not null AUTO_INCREMENT, " +
+                    "name varchar(255), " +
+                    "lastName varchar(255), " +
+                    "age integer, " +
+                    "PRIMARY KEY (id))").executeUpdate();
+                tr.commit();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void dropUsersTable() {
-        Util util = new Util();
-        try {
-            util.getConnection().prepareStatement("DROP TABLE if exists users").executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        try (Session session = HibernateUtil.getSessionFactory().openSession()){
+            tr = session.beginTransaction();
+            session.createNativeQuery("DROP TABLE users").executeUpdate();
+            tr.commit();
+    }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        User user = new User(name, lastName, age);
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        Transaction tr = session.beginTransaction();
-        session.save(user);
-        tr.commit();
-        session.close();
-
+        String d = "','";
+        try (Session session = sessionFactory.openSession()){
+            tr = session.beginTransaction();
+            session.createNativeQuery("insert into users (name, lastName, age) values(:name, :lastName, :age) ")
+                    .setParameter("name", name)
+                    .setParameter("lastName", lastName)
+                    .setParameter("age", age)
+                    .executeUpdate();
+            tr.commit();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void removeUserById(long id) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        Transaction tr = session.beginTransaction();
-        try {
+        try (Session session = sessionFactory.openSession()){
+            tr = session.beginTransaction();
             session.delete(session.get(User.class, id));
-        } catch (IllegalArgumentException e){
-            System.out.println("Usera'а с id = " + id + ", не существует.");
+            tr.commit();
+        }catch (Exception e) {
+            e.printStackTrace();
         }
-
-        tr.commit();
-        session.close();
     }
 
     @Override
     public List<User> getAllUsers() {
-        List<User> users = (List<User>)  HibernateUtil.getSessionFactory().openSession().createQuery("From User").list();
+        List<User> users = null;
+        try (Session session = sessionFactory.openSession()) {
+            tr = session.beginTransaction();
+            users =session.createNativeQuery("select * from users", User.class)
+                    .getResultList();
+            tr.commit();
+        }catch (Exception e ) {
+            e.printStackTrace();
+        }
         return users;
     }
 
     @Override
     public void cleanUsersTable() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        Transaction tr = session.beginTransaction();
-        session.createQuery("DELETE from User ").executeUpdate();
-        tr.commit();
-        session.close();
+        try (Session session = sessionFactory.openSession()){
+            tr = session.beginTransaction();
+            session.createNativeQuery("delete from users").executeUpdate();
+            tr.commit();
+    }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

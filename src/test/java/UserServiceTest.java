@@ -58,8 +58,8 @@ public class UserServiceTest {
     @Test
     public void removeUserById() {
         try {
-            userService.dropUsersTable();
-            userService.createUsersTable();
+//            userService.dropUsersTable();
+//            userService.createUsersTable();
             userService.saveUser(testName, testLastName, testAge);
             userService.removeUserById(1L);
         } catch (Exception e) {

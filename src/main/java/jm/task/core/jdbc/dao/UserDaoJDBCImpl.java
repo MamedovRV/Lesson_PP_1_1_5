@@ -42,11 +42,9 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-
         String d = "','";
         String sql = "insert into users (name, lastName, age) " +
                 "values ('" + name + d + lastName + d + String.valueOf(age)+ "')";
-
         StUpdate(sql);
     }
 
