@@ -17,43 +17,44 @@ public class UserDaoJDBCImpl implements UserDao {
         connection = util.getConnection();
     }
 
-    private void StUpdate(String sql){
-        try {
-            connection.prepareStatement(sql).executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
     public void createUsersTable() {
-        String sql = "create table if not exists users" +
-                "(idUsers INTEGER not null AUTO_INCREMENT, " +
-                "name varchar(255), " +
-                "lastName varchar(255), " +
-                "age integer, " +
-                "PRIMARY KEY (idUsers))";
-
-        StUpdate(sql);
+        try {
+            connection.prepareStatement("create table if not exists users" +
+                    "(idUsers INTEGER not null AUTO_INCREMENT, " +
+                    "name varchar(255), " +
+                    "lastName varchar(255), " +
+                    "age integer, " +
+                    "PRIMARY KEY (idUsers))").executeUpdate();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void dropUsersTable() {
-        String sql = "DROP TABLE if exists users" ;
-
-        StUpdate(sql);
+        try {
+            connection.prepareStatement("DROP TABLE if exists users").executeUpdate();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        String d = "','";
-        String sql = "insert into users (name, lastName, age) " +
-                "values ('" + name + d + lastName + d + String.valueOf(age)+ "')";
-        StUpdate(sql);
+        try {
+            connection.prepareStatement("insert into users (name, lastName, age) " +
+                    "values ('" + name +  "','" + lastName + "','" + String.valueOf(age)+ "')").executeUpdate();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void removeUserById(long id) {
-        String sql = "delete from users" +
-                " where idUsers = " +
-                id;
-
-        StUpdate(sql);
+        try {
+            connection.prepareStatement("delete from users" +
+                    " where idUsers = " +
+                    id).executeUpdate();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<User> getAllUsers() {
@@ -81,8 +82,10 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
-        String sql = "delete from users";
-
-        StUpdate(sql);
+        try {
+            connection.prepareStatement("delete from users").executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -1,10 +1,14 @@
 package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
+import jm.task.core.jdbc.util.HibernateUtil;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 import java.util.List;
 
 public interface UserDao {
+
     void createUsersTable();
 
     void dropUsersTable();
