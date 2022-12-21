@@ -46,11 +46,7 @@ public class UserDaoHibernateImpl implements UserDao {
     public void saveUser(String name, String lastName, byte age) {
         try (Session session = sessionFactory.openSession()){
            Transaction  tr = session.beginTransaction();
-            session.createNativeQuery("insert into users (name, lastName, age) values(:name, :lastName, :age) ")
-                    .setParameter("name", name)
-                    .setParameter("lastName", lastName)
-                    .setParameter("age", age)
-                    .executeUpdate();
+            session.save(new User(name, lastName, age));
             tr.commit();
         }catch (Exception e) {
             e.printStackTrace();
@@ -73,7 +69,7 @@ public class UserDaoHibernateImpl implements UserDao {
         List<User> users = null;
         try (Session session = sessionFactory.openSession()) {
             Transaction tr = session.beginTransaction();
-            users =session.createNativeQuery("select * from users", User.class)
+            users =session.createQuery("from User")
                     .getResultList();
             tr.commit();
         }catch (Exception e ) {
